@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+const cities = [];
+
+const getCities = async () => {
+  await fetch(endpoint).then((response) => {
+    response.json().then((data) => cities.push(...data));
+  });
+}
+
+getCities();
+
+const search = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+search.addEventListener('keyup', (e) => {
+  const searchTerm = e.target.value.toLowerCase();
+  let citiesHtml = '';
+
+  if(searchTerm.length < 2) return;
+
+  const matched = cities.filter( (item, i) => {
+    return item.city.toLowerCase().includes(searchTerm) || item.state.toLowerCase().includes(searchTerm);
+  });
+
+  matched.map((item) => {
+    citiesHtml += `<li>
+       <span class="name">${item.city},${item.state}</span>
+      <span class="population">(${item.population})</span></li>`;
+  })
+
+  suggestions.setHTML(citiesHtml);
+
+})
+
+</script>
+</body>
+</html>
